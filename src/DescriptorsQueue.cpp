@@ -85,12 +85,12 @@ DescriptorsQueue::~DescriptorsQueue()
 
 /*****************************************DescriptorNum*************************************/
 
-DescriptorNum::DescriptorNum(int in_nFd)
+DescriptorsQueue::DescriptorNum::DescriptorNum(int in_nFd)
 {
     nFd = in_nFd;
     pdnNext = NULL;
 }
 
-DescriptorNum::~DescriptorNum()
+DescriptorsQueue::DescriptorNum::~DescriptorNum()
 {
 }

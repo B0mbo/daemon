@@ -38,7 +38,7 @@ SomeDirectory::SomeDirectory(char const * const in_pName, SomeDirectory * const 
 
     //создаём описание корневой директории наблюдаемого проекта
     pPath = GetFullPath();
-    pfdData = new FileData(in_pName, pPath, NULL, false);
+    pfdData = new DirSnapshot::FileData(in_pName, pPath, NULL, false);
     psdParent = in_pfdParent;
 
     if((pfdData->nDirFd = open(pPath, O_RDONLY)) < 0)
@@ -60,7 +60,7 @@ SomeDirectory::SomeDirectory(char const * const in_pName, SomeDirectory * const 
 //этот конструктор автоматически открывает директорию
 //и вешает обработчик сигнала на полученный дескриптор
 //слепок директории создаётся по запросу (?)
-SomeDirectory::SomeDirectory(FileData *in_pfdData, SomeDirectory * const in_pfdParent, bool in_fGetSnapshot)
+SomeDirectory::SomeDirectory(DirSnapshot::FileData *in_pfdData, SomeDirectory * const in_pfdParent, bool in_fGetSnapshot)
 {
     char *pPath = NULL;
 
@@ -222,7 +222,7 @@ SomeDirectory * const SomeDirectory::GetParent(void)
     return psdParent;
 }
 
-FileData *SomeDirectory::GetFileData(void)
+DirSnapshot::FileData *SomeDirectory::GetFileData(void)
 {
     return pfdData;
 }
@@ -245,10 +245,10 @@ void SomeDirectory::MakeSnapshot(bool in_fStartDirThread)
 void SomeDirectory::CompareSnapshots(void)
 {
     char *pPath = NULL;
-    FileData *pfdCopy = NULL;
+    DirSnapshot::FileData *pfdCopy = NULL;
     bool fSecondResult;
     DirSnapshot *pdsRemake = NULL;
-    SnapshotComparison scResult;
+    DirSnapshot::SnapshotComparison scResult;
     SomeDirectory *psdNewDirectory = NULL;
     unsigned long ulSessionNumber;
 

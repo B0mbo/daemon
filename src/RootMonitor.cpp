@@ -69,7 +69,7 @@ RootMonitor::RootMonitor(char * const pRootPath)
     }
 }
 
-RootMonitor::RootMonitor(FileData * const in_pfdData)
+RootMonitor::RootMonitor(DirSnapshot::FileData * const in_pfdData)
 {
     pjsFirst = NULL;
     ulLastSessionNumber = 0L;
@@ -173,7 +173,7 @@ RootMonitor::~RootMonitor()
     pthread_mutex_destroy(&mEventsQueueMutex);
 }
 
-void RootMonitor::AddChange(ServiceType in_stType, unsigned long in_ulSessionNumber, FileData * const in_pfdFile, FileData const * const in_pfdParent, ResultOfCompare in_rocEvent)
+void RootMonitor::AddChange(ServiceType in_stType, unsigned long in_ulSessionNumber, DirSnapshot::FileData * const in_pfdFile, DirSnapshot::FileData const * const in_pfdParent, ResultOfCompare in_rocEvent)
 {
   JSONService *pjsList, *pjsLast, *pjsBuff;
 
@@ -206,7 +206,7 @@ void RootMonitor::AddChange(ServiceType in_stType, unsigned long in_ulSessionNum
 }
 
 //добавить в очередь инициализирующее событие для данного проекта
-void RootMonitor::AddInitChange(FileData * const in_pfdFile, FileData const * const in_pfdParent)
+void RootMonitor::AddInitChange(DirSnapshot::FileData * const in_pfdFile, DirSnapshot::FileData const * const in_pfdParent)
 {
   AddChange(INIT_SERVICE, ulLastSessionNumber, in_pfdFile, in_pfdParent, IS_EQUAL);
 }

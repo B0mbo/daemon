@@ -10,19 +10,19 @@
 #include<cstdio>
 #include<pthread.h>
 
-struct DescriptorNum
-{
-    int nFd;
-
-    //указатель на следующий дескриптор в очереди
-    DescriptorNum *pdnNext;
-
-    DescriptorNum(int in_nFd);
-    ~DescriptorNum(void);
-};
-
 class DescriptorsQueue
 {
+    struct DescriptorNum
+    {
+        int nFd;
+
+        //указатель на следующий дескриптор в очереди
+        DescriptorNum *pdnNext;
+
+        DescriptorNum(int in_nFd);
+        ~DescriptorNum(void);
+    };
+
     //указатель на первый элемент в очереди
     DescriptorNum *pdnFirst;
     pthread_mutex_t mFdQueueMutex;

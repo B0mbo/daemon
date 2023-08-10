@@ -60,14 +60,14 @@ public:
 public:
     RootMonitor();
     RootMonitor(char * const in_pRootPath);
-    RootMonitor(FileData * const in_pfdData);
+    RootMonitor(DirSnapshot::FileData * const in_pfdData);
     RootMonitor(SomeDirectory * const in_psdRootDirectory);
     ~RootMonitor();
 
     //добавить изменение в список
-    void AddChange(ServiceType in_stType, unsigned long in_ulSessionNumber, FileData * const in_pfdFile, FileData const * const in_pfdParent, ResultOfCompare in_rocEvent);
+    void AddChange(ServiceType in_stType, unsigned long in_ulSessionNumber, DirSnapshot::FileData * const in_pfdFile, DirSnapshot::FileData const * const in_pfdParent, ResultOfCompare in_rocEvent);
     //добавить изменение в инициализирующий список
-    void AddInitChange(FileData * const in_pfdFile, FileData const * const in_pfdParent);
+    void AddInitChange(DirSnapshot::FileData * const in_pfdFile, DirSnapshot::FileData const * const in_pfdParent);
     //добавить новый список изменений
     void AddJSONService(ServiceType in_stType, unsigned long in_ulSessionNumber);
     //получить готовый запрос в формате JSON

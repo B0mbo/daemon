@@ -21,54 +21,57 @@ enum ResultOfCompare {NO_SNAPSHOT = -1, IS_EMPTY = 0, INPUT_IS_EMPTY, OUTPUT_IS_
   IS_CREATED, IS_DELETED, NEW_NAME, NEW_TIME, NEW_HASH, IS_EQUAL, DIRECTORY_END,
   INIT_PROJECT, START_CONTENT, END_CONTENT, START_FILE_LIST, END_FILE_LIST};
 
-//элемент списка файлов, находящихся в отслеживаемой директории
-//обязательно должен хранить всю структуру stat для данного файла
-//и его хэш
-struct FileData
-{
-    char *pName; //имя файла
-    char *pSafeName; //имя для возврата при запросе
-    int nType; //тип файла (каталог, обычный, ссылка)
-    struct stat stData; //данные файла
-    int nDirFd; //дескриптор (для директории)
-    //char szHash[32]; //хэш (для обычного файла)
-    unsigned long ulCrc;
-
-    struct FileData *pfdNext;
-    struct FileData *pfdPrev;
-
-    FileData();
-    FileData(char const * const in_pName, char *in_pPath, struct FileData * const in_pfdPrev, bool in_fCalcHash);
-    FileData(FileData const * const in_pfdFile, char const * const in_pPath, bool in_fCalcHash);
-    ~FileData();
-
-    void CalcHash(char const * const in_pPath); //вычислить хэш файла
-    void SetName(char const * const in_pName); //сменить имя файла
-
-private:
-    //задать имя файла и определить его тип
-    void SetFileData(char const * const in_pName, char *in_pPath, bool in_fCalcHash);
-    //получить имя файла/директории
-    char const * const GetName(void);
-};
-
-struct SnapshotComparison
-{
-    ResultOfCompare rocResult;
-    FileData *pfdData;
-
-    struct SnapshotComparison *pscNext;
-
-    SnapshotComparison();
-    SnapshotComparison(FileData * const in_pfdFile, ResultOfCompare in_rocResult);
-    ~SnapshotComparison();
-
-    void CopyResult(SnapshotComparison const * const in_pscSnapshotResult);
-};
 
 // "слепок" директории (двунаправленный список всех файлов данной директории)
 class DirSnapshot
 {
+public:
+    //элемент списка файлов, находящихся в отслеживаемой директории
+    //обязательно должен хранить всю структуру stat для данного файла
+    //и его хэш
+    struct FileData
+    {
+        char *pName; //имя файла
+        char *pSafeName; //имя для возврата при запросе
+        int nType; //тип файла (каталог, обычный, ссылка)
+        struct stat stData; //данные файла
+        int nDirFd; //дескриптор (для директории)
+        //char szHash[32]; //хэш (для обычного файла)
+        unsigned long ulCrc;
+
+        struct FileData *pfdNext;
+        struct FileData *pfdPrev;
+
+        FileData();
+        FileData(char const * const in_pName, char *in_pPath, struct FileData * const in_pfdPrev, bool in_fCalcHash);
+        FileData(FileData const * const in_pfdFile, char const * const in_pPath, bool in_fCalcHash);
+	~FileData();
+
+        void CalcHash(char const * const in_pPath); //вычислить хэш файла
+        void SetName(char const * const in_pName); //сменить имя файла
+
+    private:
+	//задать имя файла и определить его тип
+        void SetFileData(char const * const in_pName, char *in_pPath, bool in_fCalcHash);
+	//получить имя файла/директории
+        char const * const GetName(void);
+    };
+
+    struct SnapshotComparison
+    {
+        ResultOfCompare rocResult;
+        FileData *pfdData;
+
+        struct SnapshotComparison *pscNext;
+
+        SnapshotComparison();
+        SnapshotComparison(FileData * const in_pfdFile, ResultOfCompare in_rocResult);
+        ~SnapshotComparison();
+
+	void CopyResult(SnapshotComparison const * const in_pscSnapshotResult);
+    };
+
+private:
     FileData *pfdFirst; //первый файл в списке слепка
     SnapshotComparison *pscFirst; //первый файл в списке результата сравнения двух слепков
 

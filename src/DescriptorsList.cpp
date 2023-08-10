@@ -28,7 +28,7 @@ DescriptorsList::DescriptorsList(SomeDirectory *in_psdRootDirectory)
     pthread_mutex_unlock(&mListMutex);
 }
 
-DescriptorsList::DescriptorsList(FileData *in_pfdData)
+DescriptorsList::DescriptorsList(DirSnapshot::FileData *in_pfdData)
 {
     //инициализация блокировки списка директорий
     mListMutex = PTHREAD_MUTEX_INITIALIZER;
@@ -146,7 +146,7 @@ void DescriptorsList::SubQueueElement(int in_nDirFd)
 }
 
 //переименовать директорию
-void DescriptorsList::RenameQueueElement(FileData const * const in_pfdNewData)
+void DescriptorsList::RenameQueueElement(DirSnapshot::FileData const * const in_pfdNewData)
 {
     DirListElement *pdleList;
 
@@ -192,7 +192,7 @@ int DescriptorsList::GetFd(void)
 void DescriptorsList::PrintList(void)
 {
     DirListElement *pdleList;
-    FileData *pfdData;
+    DirSnapshot::FileData *pfdData;
 
     //если список пуст - выходим
     if(pdleFirst == NULL)
@@ -220,7 +220,7 @@ void DescriptorsList::UpdateList(void)
     DirListElement *pdleList;
     char *pPath = NULL;
     int nDirFd;
-    FileData *pfdData;
+    DirSnapshot::FileData *pfdData;
 
 //     fprintf(stderr, "DescriptorsList::UpdateList() : start\n"); //отладка!!!
     if(pdleFirst == NULL)
@@ -316,19 +316,19 @@ SomeDirectory *DescriptorsList::GetDirectory(int in_nFd)
 
 /*********************************DirListElement*********************************/
 
-DirListElement::DirListElement()
+DescriptorsList::DirListElement::DirListElement()
 {
     psdDirectory = NULL;
     pdleNext = NULL;
     pdlePrev = NULL;
 }
 
-DirListElement::DirListElement(SomeDirectory *in_psdDirectory, DirListElement * const in_pdlePrev)
+DescriptorsList::DirListElement::DirListElement(SomeDirectory *in_psdDirectory, DirListElement * const in_pdlePrev)
 {
     psdDirectory = in_psdDirectory;
     pdlePrev = in_pdlePrev;
 
-//     fprintf(stderr, "DirListElement::DirListElement() : inode=%d\n", (int)(psdDirectory->GetFileData())->stData.st_ino); //отладка!!!
+//     fprintf(stderr, "DirListElement::DirListElement() : inode=%d\n", (int)(psdDirectory->GetDirSnapshot::FileData())->stData.st_ino); //отладка!!!
     //исключаем выпадение части элементов списка
     if(in_pdlePrev != NULL)
     {
@@ -344,7 +344,7 @@ DirListElement::DirListElement(SomeDirectory *in_psdDirectory, DirListElement * 
     }
 }
 
-DirListElement::DirListElement(FileData *in_pfdData, SomeDirectory * const in_psdParent, DirListElement * const in_pdlePrev)
+DescriptorsList::DirListElement::DirListElement(DirSnapshot::FileData *in_pfdData, SomeDirectory * const in_psdParent, DirListElement * const in_pdlePrev)
 {
     //осторожно! Родительский каталог не ищется! Надо делать! Краш!!!
     psdDirectory = new SomeDirectory(in_pfdData, in_psdParent, true); //снимок обязан присутствовать в элементе очереди
@@ -364,10 +364,10 @@ DirListElement::DirListElement(FileData *in_pfdData, SomeDirectory * const in_ps
     }
 }
 
-DirListElement::~DirListElement()
+DescriptorsList::DirListElement::~DirListElement()
 {
     //полностью удаляем директорию
-    //FileData удаляется из своего слепка автоматически
+    //DirSnapshot::FileData удаляется из своего слепка автоматически
     delete psdDirectory;
     //обновляем очередь
     if(pdlePrev != NULL)

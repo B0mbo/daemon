@@ -106,7 +106,7 @@ char * const JSONService::GetJSON(void)
 }
 
 //добавить в список запись об изменении файла
-void JSONService::AddChange(ServiceType in_stType, FileData * const in_pfdFile, FileData const * const in_pfdParent, ResultOfCompare in_rocEvent)
+void JSONService::AddChange(ServiceType in_stType, DirSnapshot::FileData * const in_pfdFile, DirSnapshot::FileData const * const in_pfdParent, ResultOfCompare in_rocEvent)
 {
   FSChange *pfscList;
 
@@ -213,7 +213,7 @@ FSChange::FSChange()
 }
 
 //перед добавлением записи необходимо найти место, куда её вставить
-FSChange::FSChange(ServiceType in_stType, FileData * const in_pfdFile, FileData const * const in_pfdParent, ResultOfCompare in_rocEvent, FSChange * const in_pfscPrev)
+FSChange::FSChange(ServiceType in_stType, DirSnapshot::FileData * const in_pfdFile, DirSnapshot::FileData const * const in_pfdParent, ResultOfCompare in_rocEvent, FSChange * const in_pfscPrev)
 {
   char szBuff[2048]; //буфер под запись
   char szType[32], szEvent[32], szCrc[32], szParent[32];

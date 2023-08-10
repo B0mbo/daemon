@@ -285,7 +285,7 @@ DirSnapshot::~DirSnapshot()
 }
 
 //добавляем файл в список
-FileData *DirSnapshot::AddFile(char const * const in_pName, char *in_pPath, bool in_fCalcHash)
+DirSnapshot::FileData *DirSnapshot::AddFile(char const * const in_pName, char *in_pPath, bool in_fCalcHash)
 {
     struct FileData *pfdList;
     char *pFullPath;
@@ -343,7 +343,7 @@ FileData *DirSnapshot::AddFile(char const * const in_pName, char *in_pPath, bool
 }
 
 //добавляем файл в список
-FileData *DirSnapshot::AddFile(FileData const * const in_pfdFile, char const * const in_pPath, bool in_fCalcHash)
+DirSnapshot::FileData *DirSnapshot::AddFile(DirSnapshot::FileData const * const in_pfdFile, char const * const in_pPath, bool in_fCalcHash)
 {
     struct FileData *pfdList;
     FileData *pfdCopy;
@@ -749,7 +749,7 @@ void DirSnapshot::PrintComparison(void)
 
 /****************************************FileData**********************************/
 
-FileData::FileData()
+DirSnapshot::FileData::FileData()
 {
     pName = new char[1];
     memset(pName, 0, sizeof(char));
@@ -764,7 +764,7 @@ FileData::FileData()
     pfdPrev = NULL;
 }
 
-FileData::FileData(char const * const in_pName, char *in_pPath, struct FileData * const in_pfdPrev, bool in_fCalcHash)
+DirSnapshot::FileData::FileData(char const * const in_pName, char *in_pPath, struct FileData * const in_pfdPrev, bool in_fCalcHash)
 {
     pfdNext = NULL;
     pfdPrev = NULL;
@@ -786,7 +786,7 @@ FileData::FileData(char const * const in_pName, char *in_pPath, struct FileData 
 }
 
 //конструктор копии
-FileData::FileData(FileData const * const in_pfdFile, char const * const in_pPath, bool in_fCalcHash)
+DirSnapshot::FileData::FileData(FileData const * const in_pfdFile, char const * const in_pPath, bool in_fCalcHash)
 {
   size_t stSize;
 
@@ -836,7 +836,7 @@ FileData::FileData(FileData const * const in_pfdFile, char const * const in_pPat
   }
 }
 
-FileData::~FileData()
+DirSnapshot::FileData::~FileData()
 {
     if(pfdPrev != NULL)
 	pfdPrev->pfdNext = pfdNext;
@@ -854,7 +854,7 @@ FileData::~FileData()
     }
 }
 
-void FileData::CalcHash(char const * const in_pPath)
+void DirSnapshot::FileData::CalcHash(char const * const in_pPath)
 {
     int nFd;
     char *pcBuff;
@@ -905,7 +905,7 @@ void FileData::CalcHash(char const * const in_pPath)
 
 //задать имя файла и определить его тип
 //по запросу можно сразу вычислить хэш
-void FileData::SetFileData(char const * const in_pName, char *in_pPath, bool in_fCalcHash)
+void DirSnapshot::FileData::SetFileData(char const * const in_pName, char *in_pPath, bool in_fCalcHash)
 {
     char *pPath = NULL;
     size_t stLen;
@@ -992,7 +992,7 @@ void FileData::SetFileData(char const * const in_pName, char *in_pPath, bool in_
       delete [] pPath;
 }
 
-void FileData::SetName(char const * const in_pName)
+void DirSnapshot::FileData::SetName(char const * const in_pName)
 {
     size_t stLen;
 
@@ -1007,35 +1007,35 @@ void FileData::SetName(char const * const in_pName)
     strncpy(pName, in_pName, stLen);
 }
 
-char const * const FileData::GetName()
+char const * const DirSnapshot::FileData::GetName()
 {
     return pName;
 }
 
 /****************************************SnapshotComparison*********************/
 
-SnapshotComparison::SnapshotComparison()
+DirSnapshot::SnapshotComparison::SnapshotComparison()
 {
     rocResult = IS_EMPTY;
     pfdData = NULL;
     pscNext = NULL;
 }
 
-SnapshotComparison::SnapshotComparison(FileData * const in_pfdFile, ResultOfCompare in_rocResult)
+DirSnapshot::SnapshotComparison::SnapshotComparison(FileData * const in_pfdFile, ResultOfCompare in_rocResult)
 {
     rocResult = in_rocResult;
     pfdData = in_pfdFile;
     pscNext = NULL;
 }
 
-SnapshotComparison::~SnapshotComparison()
+DirSnapshot::SnapshotComparison::~SnapshotComparison()
 {
     rocResult = IS_EMPTY;
     pfdData = NULL;
 }
 
 //копия
-void SnapshotComparison::CopyResult(SnapshotComparison const * const in_pscSnapshotResult)
+void DirSnapshot::SnapshotComparison::CopyResult(SnapshotComparison const * const in_pscSnapshotResult)
 {
     if(in_pscSnapshotResult == NULL)
     {
