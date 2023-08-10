@@ -5,7 +5,7 @@
 
 #pragma once
 
-#include<stdio.h>
+#include<cstdio>
 #include<fcntl.h>
 #include<signal.h>
 #include<pthread.h>

@@ -7,8 +7,8 @@
 
 #include<netdb.h>
 #include<fcntl.h>
-#include<stdio.h>
-#include<string.h>
+#include<cstdio>
+#include<cstring>
 #include<unistd.h>
 #include<pthread.h>
 #include<sys/stat.h>

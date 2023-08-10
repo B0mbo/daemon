@@ -5,8 +5,8 @@
 
 #pragma once
 
-#include<stdio.h>
-#include<string.h>
+#include<cstdio>
+#include<cstring>
 
 //поля текущей (обрабатываемой в данный момент) записи
 struct JSONField

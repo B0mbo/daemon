@@ -6,10 +6,10 @@
 //2 - потоки добавления дескрипторов в очередь на обработку, запускаемые из обработчика сигнала
 //3 - поток обработки СПИСКА открытых директорий (дескрипторов), стартует вместе с этим приложением
 
-#include<stdio.h>
+#include<cstdio>
 #include<fcntl.h>
 #include<unistd.h>
-#include<string.h>
+#include<cstring>
 #include<signal.h>
 #include<dirent.h> //opendir(), readdir()
 #include<stdlib.h>

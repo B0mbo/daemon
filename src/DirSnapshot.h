@@ -6,9 +6,9 @@
 #pragma once
 
 #include<zlib.h>
-#include<stdio.h>
+#include<cstdio>
 #include<errno.h>
-#include<string.h>
+#include<cstring>
 #include<unistd.h>
 #include<dirent.h>
 #include<strings.h>

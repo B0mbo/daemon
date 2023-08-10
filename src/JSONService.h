@@ -5,8 +5,8 @@
 
 #pragma once
 
-#include<time.h>
-#include<stdio.h>
+#include<ctime>
+#include<cstdio>
 #include<pthread.h>
 
 #include"DirSnapshot.h"
