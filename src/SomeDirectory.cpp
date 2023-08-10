@@ -314,7 +314,7 @@ void SomeDirectory::CompareSnapshots(void)
 	      //запускаем поток обработки списка директорий
 	      pthread_mutex_unlock(&(RootMonitor::mDirThreadMutex));
 	    }
-	    fprintf(stderr, "%s \"%s%s%s\" has been created.\n",
+	    fprintf(stderr, "%s \"%s%s%s\" is created.\n",
 			      (scResult.pfdData->nType==IS_DIRECTORY)?"Directory":"File",
 			      (pPath==NULL)?"":pPath,
 			      (pPath==NULL||( (strlen(pPath) > 0) && (pPath[strlen(pPath)-1] == '/') ))?"":"/",
@@ -326,7 +326,7 @@ void SomeDirectory::CompareSnapshots(void)
 	    break;
 	  case IS_DELETED:
 	    pPath = GetFullPath();
-	    fprintf(stderr, "%s \"%s%s%s\" (inode=%d) has been deleted.\n",
+	    fprintf(stderr, "%s \"%s%s%s\" (inode=%d) is deleted.\n",
 			      (scResult.pfdData->nType==IS_DIRECTORY)?"Directory":"File",
 			      (pPath==NULL)?"":pPath,
 			      (pPath==NULL||( (strlen(pPath) > 0) && (pPath[strlen(pPath)-1] == '/') ))?"":"/",
@@ -354,7 +354,7 @@ void SomeDirectory::CompareSnapshots(void)
 	    break;
 	  case NEW_NAME:
 	    pPath = GetFullPath();
-	    fprintf(stderr, "Some file has been renamed to \"%s%s%s\".\n",
+	    fprintf(stderr, "Some file is renamed to \"%s%s%s\".\n",
 			    (pPath==NULL)?"":pPath,
 			    (pPath==NULL||( (strlen(pPath) > 0) && (pPath[strlen(pPath)-1] == '/') ))?"":"/",
 			    scResult.pfdData->pName); //отладка!!!
@@ -367,7 +367,7 @@ void SomeDirectory::CompareSnapshots(void)
 	    break;
 	  case NEW_TIME:
 	    pPath = GetFullPath();
-	    fprintf(stderr, "A time of file \"%s%s%s\" has been changed.\n", (pPath==NULL)?"":pPath, (pPath==NULL)?"":"/", scResult.pfdData->pName); //отладка!!!
+	    fprintf(stderr, "A time of file \"%s%s%s\" is changed.\n", (pPath==NULL)?"":pPath, (pPath==NULL)?"":"/", scResult.pfdData->pName); //отладка!!!
 	    //scResult.pfdData содержит данные изменившегося файла. Всё, кроме хэша
 	    scResult.pfdData->CalcHash(pPath);
 	    if(pPath != NULL)
@@ -382,7 +382,7 @@ void SomeDirectory::CompareSnapshots(void)
 	    break;
 	  case NEW_HASH:
 	    pPath = GetFullPath();
-	    fprintf(stderr, "%s \"%s%s%s\" (inode=%d) has been changed.\n",
+	    fprintf(stderr, "%s \"%s%s%s\" (inode=%d) is changed.\n",
 			      (scResult.pfdData->nType==IS_DIRECTORY)?"Directory":"File",
 			      (pPath==NULL)?"":pPath,
 			      (pPath==NULL||( (strlen(pPath) > 0) && (pPath[strlen(pPath)-1] == '/') ))?"":"/",
