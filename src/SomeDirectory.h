@@ -15,6 +15,8 @@
 
 #include"DirSnapshot.h"
 
+namespace undefinedspace {
+
 class SomeDirectory
 {
     DirSnapshot::FileData *pfdData; //ссылка на полное описание файла
@@ -44,3 +46,5 @@ public:
 
     void PrintSnapshot(void); //отладка!!!
 };
+
+}

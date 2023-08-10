@@ -7,6 +7,8 @@
 #include"RootMonitor.h"
 #include"JSONService.h"
 
+using namespace undefinedspace;
+
 extern RootMonitor *rmProject;
 
 SomeDirectory::SomeDirectory()

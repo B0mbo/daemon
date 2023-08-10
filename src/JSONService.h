@@ -11,6 +11,8 @@
 
 #include"DirSnapshot.h"
 
+namespace undefinedspace {
+
 enum ServiceType {NOT_READY = -1, NO_SERVICE = 0, INIT_SERVICE, CURRENT_SERVICE}; //тип очереди на отправку
 
 //запись одного изменения
@@ -62,3 +64,5 @@ public:
 
   void PrintService(void); //вывести содержимое списка
 };
+
+}

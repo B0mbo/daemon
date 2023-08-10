@@ -7,6 +7,8 @@
 
 #include"DescriptorsQueue.h"
 
+using namespace undefinedspace;
+
 /*****************************************DescriptorsQueue**********************************/
 
 DescriptorsQueue::DescriptorsQueue()

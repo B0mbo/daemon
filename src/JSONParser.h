@@ -8,6 +8,8 @@
 #include<cstdio>
 #include<cstring>
 
+namespace undefinedspace {
+
 //поля текущей (обрабатываемой в данный момент) записи
 struct JSONField
 {
@@ -45,3 +47,5 @@ public:
     //выделение и обработка всех записей запроса
     void ParseAllItems(void);
 };
+
+}

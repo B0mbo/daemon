@@ -24,6 +24,8 @@
 
 #define THREAD_SLEEP_TIME 0
 
+using namespace undefinedspace;
+
 RootMonitor *rmProject;
 
 void StartSomeThread(unsigned long in_ulStack, void *(* in_FunctionName)(void *), void *in_pvArg);

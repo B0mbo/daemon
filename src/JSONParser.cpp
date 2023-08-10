@@ -5,6 +5,8 @@
 
 #include"JSONParser.h"
 
+using namespace undefinedspace;
+
 //************************************JSONParser*********************************************//
 JSONParser::JSONParser()
 {

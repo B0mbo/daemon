@@ -5,6 +5,8 @@
 
 #include"JSONService.h"
 
+using namespace undefinedspace;
+
 /***********************************JSONService*************************************/
 
 JSONService::JSONService()

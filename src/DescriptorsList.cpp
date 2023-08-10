@@ -5,6 +5,8 @@
 
 #include"DescriptorsList.h"
 
+using namespace undefinedspace;
+
 /*********************************DescriptorQueue*********************************/
 
 DescriptorsList::DescriptorsList()

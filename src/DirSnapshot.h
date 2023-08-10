@@ -15,6 +15,8 @@
 #include<sys/stat.h>
 #include<sys/types.h>
 
+namespace undefinedspace {
+
 enum {IS_NOTAFILE = 0, IS_DIRECTORY, IS_FILE, IS_LINK}; //виды файлов
 
 enum ResultOfCompare {NO_SNAPSHOT = -1, IS_EMPTY = 0, INPUT_IS_EMPTY, OUTPUT_IS_EMPTY,
@@ -103,3 +105,5 @@ public:
     void PrintSnapshot(void); //отладка!!!
     void PrintComparison(void); //отладка!!!
 };
+
+}

@@ -13,6 +13,8 @@
 #include"DirSnapshot.h"
 #include"SomeDirectory.h"
 
+namespace undefinedspace {
+
 class DescriptorsList
 {
     struct DirListElement
@@ -50,3 +52,5 @@ public:
 
     SomeDirectory *GetDirectory(int in_nDirFd);
 };
+
+}

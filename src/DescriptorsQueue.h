@@ -10,6 +10,8 @@
 #include<cstdio>
 #include<pthread.h>
 
+namespace undefinedspace {
+
 class DescriptorsQueue
 {
     struct DescriptorNum
@@ -35,3 +37,5 @@ public:
     void AddDescriptor(int in_nFd);
     int GetDescriptor(void);
 };
+
+}

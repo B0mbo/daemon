@@ -22,6 +22,8 @@
 #include"JSONService.h"
 #include"JSONParser.h"
 
+namespace undefinedspace {
+
 //все потоки обработчиков дескрипторов обращаются только к объекту этого класса (?)
 class RootMonitor
 {
@@ -88,3 +90,5 @@ public:
     void PrintSession(unsigned long in_ulSessionNumber);
     void PrintServices(void);
 };
+
+}

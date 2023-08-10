@@ -5,6 +5,8 @@
 
 #include"RootMonitor.h"
 
+using namespace undefinedspace;
+
 DescriptorsList *RootMonitor::pdlList = NULL;
 DescriptorsQueue *RootMonitor::pdqQueue = NULL;
 pthread_mutex_t RootMonitor::mDescListMutex = PTHREAD_MUTEX_INITIALIZER;
