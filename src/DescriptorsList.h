@@ -5,8 +5,8 @@
 
 #pragma once
 
-#include<cstdio>
 #include<fcntl.h>
+#include<iostream>
 #include<signal.h>
 #include<pthread.h>
 

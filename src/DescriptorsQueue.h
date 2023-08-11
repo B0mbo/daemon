@@ -7,7 +7,7 @@
 
 #pragma once
 
-#include<cstdio>
+#include<iostream>
 #include<pthread.h>
 
 namespace undefinedspace {

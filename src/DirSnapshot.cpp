@@ -60,7 +60,7 @@ DirSnapshot::DirSnapshot(char const * const in_pName)
 	    pfdFile = AddFile(pdeData->d_name, true); //сразу вычисляем хэш
 
 	    if(pfdFile != NULL)
-		fprintf(stderr, "1:%s\t%s  \n", (pfdFile->nType==IS_DIRECTORY)?("DIR"):(""), pdeData->d_name); //отладка!!!
+		std::cerr << "1:" << ((pfdFile->nType==IS_DIRECTORY)?("DIR"):("")) << "\t" << pdeData->d_name << " " << std::endl; //отладка!!!
 
 	    //т.к. этим конструктором создаётся слепок исключительно для сравнения с другими,
 	    //отслежывать найденные в нём директории не требуется
@@ -103,14 +103,14 @@ DirSnapshot::DirSnapshot(FileData * const in_pfdParent)
 	    pfdFile = AddFile(pdeData->d_name, true); //сразу вычисляем хэш
 
 	    if(pfdFile != NULL)
-		fprintf(stderr, "2:%s\t%s  \n", (pfdFile->nType==IS_DIRECTORY)?("DIR"):(""), pdeData->d_name); //отладка!!!
+		std::cerr << "2:" << ((pfdFile->nType==IS_DIRECTORY)?("DIR"):("")) << "\t" << pdeData->d_name << " " << std::endl; //отладка!!!
 
 	    //если это директория - добавляем в список
 	    //ищем полный путь к директории
 //	    pPath = in_pfdParent->GetFullPath();
 	    if(pPath != NULL)
 	    {
-//		fprintf(stderr, "path: %s\n", pPath); //отладка!!!
+//		std::cerr << "path: " << pPath << std::endl; //отладка!!!
 //		delete [] pPath;
 	    }
 	}
@@ -147,7 +147,7 @@ DirSnapshot::DirSnapshot(void * const in_psdParent, bool in_fMakeHash, bool in_f
     //небольшая проверка
     if(psdParent == NULL || ((pfdData = psdParent->GetFileData())==NULL) || pfdData->nType != IS_DIRECTORY)
     {
-	fprintf(stderr, "DirSnapshot::DirSnapshot() Can not create snapshot (file \"%s\" is not a directory)\n", (pfdData==NULL)?"NULL!!!":pfdData->pName);
+	std::cerr << "DirSnapshot::DirSnapshot() Can not create snapshot (file \"" << ((pfdData==NULL)?"NULL!!!":pfdData->pName) << "\" is not a directory)" << std::endl;
 	return;
     }
 
@@ -159,7 +159,7 @@ DirSnapshot::DirSnapshot(void * const in_psdParent, bool in_fMakeHash, bool in_f
       //если директория ещё не открыта - открываем
       if(nFd == -1)
       {
-//  	fprintf(stderr, "DirSnapshot::DirSnapshot() открывается этот файл: pPath=\"%s\"\n", pPath); //отладка!!!
+//  	std::cerr << "DirSnapshot::DirSnapshot() открывается этот файл: pPath=\"" << pPath << "\"" << std::endl; //отладка!!!
 	nFd = open(pPath, O_RDONLY);
 	switch(errno)
 	{
@@ -172,11 +172,11 @@ DirSnapshot::DirSnapshot(void * const in_psdParent, bool in_fMakeHash, bool in_f
 	//учесть при инкапсуляции (!)
 	psdParent->GetFileData()->nDirFd = nFd;
       }
-//       fprintf(stderr, "DirSnapshot::DirSnapshot() nFd=%d\n", nFd); //отладка!!!
+//       std::cerr << "DirSnapshot::DirSnapshot() nFd=" << nFd << std::endl; //отладка!!!
       dFd = fdopendir(nFd);
       if(dFd == NULL)
       {
-// 	fprintf(stderr, "DirSnapshot::DirSnapshot() dFd == NULL\n");
+// 	std::cerr << "DirSnapshot::DirSnapshot() dFd == NULL" << std::endl;
 	if(pPath != NULL)
 	  delete [] pPath;
 	return;
@@ -192,7 +192,7 @@ DirSnapshot::DirSnapshot(void * const in_psdParent, bool in_fMakeHash, bool in_f
       dFd = fdopendir(nFd);
       if(dFd == NULL)
       {
-	fprintf(stderr, "DirSnapshot::DirSnapshot() : This directory is closed!!!\n");
+	std::cerr << "DirSnapshot::DirSnapshot() : This directory is closed!!!" << std::endl;
 	return;
       }
       rewinddir(dFd); //вот что надо было сделать!
@@ -215,11 +215,11 @@ DirSnapshot::DirSnapshot(void * const in_psdParent, bool in_fMakeHash, bool in_f
 	      if(rmProject != NULL && psdParent->GetFileData() != NULL)
 		rmProject->AddInitChange(pfdFile, psdParent->GetFileData());
 	      else
-		fprintf(stderr, "DirSnapshot::DirSnapshot() : error! rmProject=%ld\n", (unsigned long)rmProject);
+		std::cerr << "DirSnapshot::DirSnapshot() : error! rmProject=" << (unsigned long)rmProject << std::endl;
 	    }
 
 //  	    if(in_fUpdateDirList)
-//  	      fprintf(stderr, "DirSnapshot::DirSnapshot() 3:path: %s, %s\t%s, fd=%d, inode=%d\n", pPath, (pfdFile->nType==IS_DIRECTORY)?("DIR"):(""), pdeData->d_name, pfdFile->nDirFd, (int)pfdFile->stData.st_ino); //отладка!!!
+//  	      std::cerr << "DirSnapshot::DirSnapshot() 3:path: " << pPath << ", " << ((pfdFile->nType==IS_DIRECTORY)?("DIR"):("")) << "\t" << pdeData->d_name << ", fd=" << pfdFile->nDirFd << ", inode=" << (int)pfdFile->stData.st_ino << std::endl; //отладка!!!
 	    if(pfdFile == NULL)
 	    {
 		pdeData = readdir(dFd);
@@ -336,7 +336,7 @@ DirSnapshot::FileData *DirSnapshot::AddFile(char const * const in_pName, char *i
     }
     else
     {
-//       fprintf(stderr, "DirSnapshot::AddFile() : \"%s\"\n", pFullPath); //отладка!!!
+//       std::cerr << "DirSnapshot::AddFile() : \"" << pFullPath << "\"" << std::endl; //отладка!!!
       delete [] pFullPath;
       pthread_mutex_unlock(&mSnapshotList);
       return NULL;
@@ -474,14 +474,14 @@ void DirSnapshot::RenameFile(FileData const * const in_pfdData)
 //требуется переработать для поиска всех отличий сразу, а не по одному за вызов (!)
 void DirSnapshot::CompareSnapshots(DirSnapshot *in_pdsRemake, bool in_fHash)
 {
-//   fprintf(stderr, "DirSnapshot::CompareSnapshots() : main snapshot:\n"); //отладка!!!
+//   std::cerr << "DirSnapshot::CompareSnapshots() : main snapshot:" << std::endl; //отладка!!!
 //   PrintSnapshot(); //отладка!!!
-//   fprintf(stderr, "DirSnapshot::CompareSnapshots() : remake snapshot:\n"); //отладка!!!
+//   std::cerr << "DirSnapshot::CompareSnapshots() : remake snapshot:" << std::endl; //отладка!!!
 //   in_pdsRemake->PrintSnapshot(); //отладка!!!
 
   IsDataIncluded(this, in_pdsRemake, in_fHash);
 
-//   fprintf(stderr, "DirSnapshot::CompareSnapshots() : result of compare:\n"); //отладка!!!
+//   std::cerr << "DirSnapshot::CompareSnapshots() : result of compare:" << std::endl; //отладка!!!
 //   PrintComparison(); //отладка!!!
 }
 
@@ -686,7 +686,7 @@ void DirSnapshot::GetResult(SnapshotComparison * const out_pscResult)
 
   if(out_pscResult == NULL)
   {
-    fprintf(stderr, "DirSnapshot::GetResult() : out_pscResult is NULL!\n");
+    std::cerr << "DirSnapshot::GetResult() : out_pscResult is NULL!" << std::endl;
     return;
   }
   //если список не инициализирован или пустой - возвращаем NULL
@@ -726,9 +726,9 @@ void DirSnapshot::PrintSnapshot(void)
   while(pfdList != NULL)
   {
     if(pfdList->nType == IS_DIRECTORY)
-      fprintf(stderr, "DirSnapshot::PrintSnapshot() : %s, inode=%d\n", pfdList->pName, (int)pfdList->stData.st_ino);
+      std::cerr << "DirSnapshot::PrintSnapshot() : " << pfdList->pName << ", inode=" << (int)pfdList->stData.st_ino << std::endl;
     else
-      fprintf(stderr, "DirSnapshot::PrintSnapshot() : %s, inode=%d, crc=0x%x\n", pfdList->pName, (int)pfdList->stData.st_ino, (int)pfdList->ulCrc);
+      std::cerr << "DirSnapshot::PrintSnapshot() : " << pfdList->pName << ", inode=" << (int)pfdList->stData.st_ino << "crc=0x" << std::hex << (int)pfdList->ulCrc << std::endl;
     pfdList = pfdList->pfdNext;
   }
 }
@@ -742,9 +742,9 @@ void DirSnapshot::PrintComparison(void)
   while(pscList != NULL)
   {
     if(pscList->pfdData != NULL && pscList->pfdData->pName != NULL)
-      fprintf(stderr, "DirSnapshot::PrintComparison() : \"%s\", %d\n", pscList->pfdData->pName, pscList->rocResult);
+      std::cerr << "DirSnapshot::PrintComparison() : \"" << pscList->pfdData->pName << "\", " << pscList->rocResult << std::endl;
     else
-      fprintf(stderr, "DirSnapshot::PrintComparison() : NULL, %d\n", pscList->rocResult);
+      std::cerr << "DirSnapshot::PrintComparison() : NULL, " << pscList->rocResult << std::endl;
     pscList = pscList->pscNext;
   }
 }
@@ -935,7 +935,7 @@ void DirSnapshot::FileData::SetFileData(char const * const in_pName, char *in_pP
 	//осторожно, может сильно вырасти список пустышек (!)
 	//возможно, стоит вызывать stat до создания объекта класса FileData
 	perror("error in stat, FileData::SetFileData()");
- 	fprintf(stderr, "Can not get stat FileData::SetFileData() : \"%s\" !\n", in_pName); //отладка!!!
+ 	std::cerr << "Can not get stat FileData::SetFileData() : \"" << in_pName << "\" !" << std::endl; //отладка!!!
 	pName = new char[1];
 	memset(pName, 0, sizeof(char));
 	pSafeName = NULL;

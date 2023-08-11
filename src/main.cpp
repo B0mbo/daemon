@@ -6,10 +6,10 @@
 //2 - потоки добавления дескрипторов в очередь на обработку, запускаемые из обработчика сигнала
 //3 - поток обработки СПИСКА открытых директорий (дескрипторов), стартует вместе с этим приложением
 
-#include<cstdio>
 #include<fcntl.h>
-#include<unistd.h>
 #include<cstring>
+#include<unistd.h>
+#include<iostream>
 #include<signal.h>
 #include<dirent.h> //opendir(), readdir()
 #include<stdlib.h>
@@ -45,7 +45,7 @@ int main(int argc, char *argv[])
   rlimit r;
   JSONParser *jp = new JSONParser();
 
-//  fprintf(stderr, "DEBUG!!!\n");
+//  std::cerr << "DEBUG!!!" << std::endl;
   jp->CheckRequest();
 //  return 0;
 
@@ -55,7 +55,7 @@ int main(int argc, char *argv[])
   if(setrlimit(RLIMIT_NOFILE, &r) < 0)
     perror("main(), setrlimit error:");
   getrlimit(RLIMIT_NOFILE, &r);
-  fprintf(stderr, "main() : nofile limits: rlim_cur=%ld, rlim_max=%ld\n", r.rlim_cur, r.rlim_max);
+  std::cerr << "main() : nofile limits: rlim_cur=" << r.rlim_cur << ", rlim_max=" << r.rlim_max << std::endl;
 
   pthread_mutex_unlock(&(RootMonitor::mDescListMutex));
   pthread_mutex_unlock(&(RootMonitor::mDescQueueMutex));
@@ -64,7 +64,7 @@ int main(int argc, char *argv[])
   //проверяем количество аргументов
   if(argc <= 2)
   {
-    fprintf(stderr, "USAGE: %s <path to directory 1> ... <path to directory N> <server URL[:Port]>\n", argv[0]);
+    std::cerr << "USAGE: " << argv[0] << " <path to directory 1> ... <path to directory N> <server URL[:Port]>" << std::endl;
     return -1;
   }
 
@@ -81,7 +81,7 @@ int main(int argc, char *argv[])
   //инициализируем маску
   signal_data.sa_mask = set;
   if(sigaction(SIGUSR1, &signal_data, NULL) < 0)
-    fprintf(stderr, "sigaction(): can not activate signal\n");
+    std::cerr << "sigaction(): can not activate signal" << std::endl;
 
   for(i = 0; i < argc-2; ++i)
   {
@@ -91,18 +91,18 @@ int main(int argc, char *argv[])
     strncpy(filename, argv[i+1], sizeof(filename));
     if(filename[0] != '/')
     {
-      fprintf(stderr, "main() wrong path: A path to project directory must be full! (\"%s\")\n", filename);
+      std::cerr << "main() wrong path: A path to project directory must be full! (\"" << filename << "\")" << std::endl;
       continue;
     }
 
     //пытаемся открыть файл
     rmProject = new RootMonitor(filename);
     stat(filename, &st);
-    fprintf(stderr, "Project path: \"%s\", inode=%ld, mode=%d, DIR=%d\n", filename, st.st_ino, st.st_mode & S_IFDIR, S_IFDIR);
+    std::cerr << "Project path: \"" << filename << "\", inode=" << st.st_ino << ", mode=" << (st.st_mode & S_IFDIR) << ", DIR=" <<  S_IFDIR << std::endl;
     break;
   }
 
-  fprintf(stderr, "Server URL: %s\n", argv[argc-1]);
+  std::cerr << "Server URL: " << argv[argc-1] << std::endl;
   rmProject->SetServerURL(argv[argc-1]);
 
   //запускаем поток обработки сигнала
@@ -117,7 +117,7 @@ int main(int argc, char *argv[])
   usleep(2000000); //отладка!!!
   char *list; //отладка!!!
   list = rmProject->GetJSON(rmProject->GetLastSessionNumber()); //отладка!!!
-  fprintf(stderr, "%s\n", (list==NULL)?"NULL":list); //отладка!!!
+  std::cerr << ((list==NULL)?"NULL":list) << std::endl; //отладка!!!
   if(list != NULL) //отладка!!!
     delete [] list; //отладка!!!
 
@@ -176,7 +176,7 @@ void *fd_queue_thread(void *arg)
     RootMonitor::pdqQueue->AddDescriptor(nFd);
   else
   {
-    fprintf(stderr, "очередь ещё не инициализирована!\n");
+    std::cerr << "очередь ещё не инициализирована!" << std::endl;
     pthread_exit(NULL);
   }
 
@@ -209,7 +209,7 @@ void *file_thread(void *arg)
         if(psdDir != NULL)
           psdDir->CompareSnapshots();
         else
-          fprintf(stderr, "fd_queue_thread() : No such directory!\n");
+          std::cerr << "fd_queue_thread() : No such directory!" << std::endl;
 
         if(nFd >= 0)
         {
@@ -221,7 +221,7 @@ void *file_thread(void *arg)
           {
             perror("fcntl");
             close(nFd);
-            fprintf(stderr, "Can not init signal for fd\n");
+            std::cerr << "Can not init signal for fd" << std::endl;
             continue;
           }
           //устанавливаем типы оповещений
@@ -229,7 +229,7 @@ void *file_thread(void *arg)
           {
             perror("fcntl");
             close(nFd);
-            fprintf(stderr, "Can not set types for the signal\n");
+            std::cerr << "Can not set types for the signal" << std::endl;
             continue;
           }
         }

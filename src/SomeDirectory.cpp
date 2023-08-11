@@ -47,7 +47,7 @@ SomeDirectory::SomeDirectory(char const * const in_pName, SomeDirectory * const 
     {
       if((pfdData->nDirFd = open(in_pName, O_RDONLY)) < 0)
       {
-	fprintf(stderr, "SomeDirectory::SomeDirectory() : Can not open directory \"%s\"!!!\n", pPath);
+	std::cerr << "SomeDirectory::SomeDirectory() : Can not open directory \"" << pPath << "\"!!!" << std::endl;
         //если директория не найдена или не может быть открыта
 	if(pPath != NULL)
 	  delete [] pPath;
@@ -99,7 +99,7 @@ SomeDirectory::SomeDirectory(DirSnapshot::FileData *in_pfdData, SomeDirectory * 
 
     if(psdParent == NULL && in_pfdData->nDirFd == -1)
     {
-	fprintf(stderr, "SomeDirectory::SomeDirectory() невозможно открыть директорию и получить fd: %s\n", in_pfdData->pName); //отладка!!!
+	std::cerr << "SomeDirectory::SomeDirectory() невозможно открыть директорию и получить fd: " << in_pfdData->pName << std::endl; //отладка!!!
 	//если директория не найдена или не может быть открыта
 	pfdData = NULL;
 	psdParent = NULL;
@@ -259,7 +259,7 @@ void SomeDirectory::CompareSnapshots(void)
 	//если слепка ещё нет, создаём и выходим, т.к. это исключительная ситуация
 	//поскольку при вызове этой функции слепок уже должен существовать
 	pdsSnapshot = new DirSnapshot((void *) this, true, true);
-	fprintf(stderr, "SomeDirectory::CompareSnapshots() : Позднее создание слепка!\n");
+	std::cerr << "SomeDirectory::CompareSnapshots() : Позднее создание слепка!" << std::endl;
 	return;
     }
 
@@ -275,7 +275,7 @@ void SomeDirectory::CompareSnapshots(void)
     pdsSnapshot->GetResult(&scResult);
 
     ulSessionNumber = rmProject->GetRegularSessionNumber();
-//     fprintf(stderr, "SomeDirectory::CompareSnapshots() : %ld\n", ulSessionNumber); //отладка!!!
+//     std::cerr << "SomeDirectory::CompareSnapshots() : " << ulSessionNumber << std::endl; //отладка!!!
     rmProject->IncRegularSessionNumber();
 
     //обрабатываем каждое отличие в отдельности
@@ -285,16 +285,16 @@ void SomeDirectory::CompareSnapshots(void)
 	switch(scResult.rocResult)
 	{
 	  case NO_SNAPSHOT:
-	    fprintf(stderr, "SomeDirectory::CompareSnapshots() : No snapshot.\n"); //отладка!!!
+	    std::cerr << "SomeDirectory::CompareSnapshots() : No snapshot." << std::endl; //отладка!!!
 	    break;
 	  case IS_EMPTY:
-	    fprintf(stderr, "SomeDirectory::CompareSnapshots() : Old snapshot is empty.\n"); //отладка!!!
+	    std::cerr << "SomeDirectory::CompareSnapshots() : Old snapshot is empty." << std::endl; //отладка!!!
 	    break;
 	  case INPUT_IS_EMPTY:
-	    fprintf(stderr, "SomeDirectory::CompareSnapshots() : Input snapshot is empty.\n"); //отладка!!!
+	    std::cerr << "SomeDirectory::CompareSnapshots() : Input snapshot is empty." << std::endl; //отладка!!!
 	    break;
 	  case OUTPUT_IS_EMPTY:
-	    fprintf(stderr, "SomeDirectory::CompareSnapshots() : The result is empty.\n"); //отладка!!!
+	    std::cerr << "SomeDirectory::CompareSnapshots() : The result is empty." << std::endl; //отладка!!!
 	    break;
 	  case IS_CREATED:
 	    //получаем путь к родительской директории
@@ -314,11 +314,7 @@ void SomeDirectory::CompareSnapshots(void)
 	      //запускаем поток обработки списка директорий
 	      pthread_mutex_unlock(&(RootMonitor::mDirThreadMutex));
 	    }
-	    fprintf(stderr, "%s \"%s%s%s\" is created.\n",
-			      (scResult.pfdData->nType==IS_DIRECTORY)?"Directory":"File",
-			      (pPath==NULL)?"":pPath,
-			      (pPath==NULL||( (strlen(pPath) > 0) && (pPath[strlen(pPath)-1] == '/') ))?"":"/",
-			      scResult.pfdData->pName); //отладка!!!
+	    std::cerr << ((scResult.pfdData->nType==IS_DIRECTORY)?"Directory":"File") << " \"" << ((pPath==NULL)?"":pPath) << ((pPath==NULL||( (strlen(pPath) > 0) && (pPath[strlen(pPath)-1] == '/') ))?"":"/") << scResult.pfdData->pName << "\" is created." << std::endl; //отладка!!!
 	    if(pPath != NULL)
 	      delete [] pPath;
 	    //добавляем запись в список событий
@@ -326,12 +322,7 @@ void SomeDirectory::CompareSnapshots(void)
 	    break;
 	  case IS_DELETED:
 	    pPath = GetFullPath();
-	    fprintf(stderr, "%s \"%s%s%s\" (inode=%d) is deleted.\n",
-			      (scResult.pfdData->nType==IS_DIRECTORY)?"Directory":"File",
-			      (pPath==NULL)?"":pPath,
-			      (pPath==NULL||( (strlen(pPath) > 0) && (pPath[strlen(pPath)-1] == '/') ))?"":"/",
-			      scResult.pfdData->pName,
-			      (int)scResult.pfdData->stData.st_ino); //отладка!!!
+	    std::cerr << ((scResult.pfdData->nType==IS_DIRECTORY)?"Directory":"File") << " \"" << ((pPath==NULL)?"":pPath) << ((pPath==NULL||( (strlen(pPath) > 0) && (pPath[strlen(pPath)-1] == '/') ))?"":"/") << scResult.pfdData->pName << "\" (inode=" << (int)scResult.pfdData->stData.st_ino << ") is deleted." << std::endl; //отладка!!!
 	    if(pPath != NULL)
 	      delete [] pPath;
 	    //добавляем запись в список событий
@@ -342,7 +333,7 @@ void SomeDirectory::CompareSnapshots(void)
 	    {
 	      //удаляем директорию из списка директорий (вместе с описанием файла)
 	      pthread_mutex_lock(&(RootMonitor::mDescListMutex));
-// 	      fprintf(stderr, "SomeDirectory::CompareComparisons() : n = %d\n", scResult.pfdData->nDirFd); //отладка!!!
+// 	      std::cerr << "SomeDirectory::CompareComparisons() : n = " << scResult.pfdData->nDirFd << std::endl; //отладка!!!
 	      RootMonitor::pdlList->SubQueueElement(scResult.pfdData->nDirFd);
 	      pthread_mutex_unlock(&(RootMonitor::mDescListMutex));
 	    }
@@ -354,10 +345,7 @@ void SomeDirectory::CompareSnapshots(void)
 	    break;
 	  case NEW_NAME:
 	    pPath = GetFullPath();
-	    fprintf(stderr, "Some file is renamed to \"%s%s%s\".\n",
-			    (pPath==NULL)?"":pPath,
-			    (pPath==NULL||( (strlen(pPath) > 0) && (pPath[strlen(pPath)-1] == '/') ))?"":"/",
-			    scResult.pfdData->pName); //отладка!!!
+	    std::cerr << "Some file is renamed to \"" << ((pPath==NULL)?"":pPath) << ((pPath==NULL||( (strlen(pPath) > 0) && (pPath[strlen(pPath)-1] == '/') ))?"":"/") << scResult.pfdData->pName << "\"." << std::endl; //отладка!!!
 	    if(pPath != NULL)
 	      delete [] pPath;
 	    //переимновываем файл
@@ -367,7 +355,7 @@ void SomeDirectory::CompareSnapshots(void)
 	    break;
 	  case NEW_TIME:
 	    pPath = GetFullPath();
-	    fprintf(stderr, "A time of file \"%s%s%s\" is changed.\n", (pPath==NULL)?"":pPath, (pPath==NULL)?"":"/", scResult.pfdData->pName); //отладка!!!
+	    std::cerr << "A time of file \"" << ((pPath==NULL)?"":pPath) << ((pPath==NULL)?"":"/") << scResult.pfdData->pName << "\" is changed." <<std::endl; //отладка!!!
 	    //scResult.pfdData содержит данные изменившегося файла. Всё, кроме хэша
 	    scResult.pfdData->CalcHash(pPath);
 	    if(pPath != NULL)
@@ -382,12 +370,7 @@ void SomeDirectory::CompareSnapshots(void)
 	    break;
 	  case NEW_HASH:
 	    pPath = GetFullPath();
-	    fprintf(stderr, "%s \"%s%s%s\" (inode=%d) is changed.\n",
-			      (scResult.pfdData->nType==IS_DIRECTORY)?"Directory":"File",
-			      (pPath==NULL)?"":pPath,
-			      (pPath==NULL||( (strlen(pPath) > 0) && (pPath[strlen(pPath)-1] == '/') ))?"":"/",
-			      scResult.pfdData->pName,
-			      (int)scResult.pfdData->stData.st_ino); //отладка!!!
+	    std::cerr << ((scResult.pfdData->nType==IS_DIRECTORY)?"Directory":"File") << " \"" << ((pPath==NULL)?"":pPath) << ((pPath==NULL||( (strlen(pPath) > 0) && (pPath[strlen(pPath)-1] == '/') ))?"":"/") << scResult.pfdData->pName << "\" (inode=" << (int)scResult.pfdData->stData.st_ino << ") is changed." << std::endl; //отладка!!!
 
 	    //обновляем данные в базе
 	    //удаляем файл из прежнего слепка
@@ -432,7 +415,7 @@ void SomeDirectory::CompareSnapshots(void)
     char *list = rmProject->GetJSON(ulSessionNumber); //отладка!!!
     if(list != NULL) //отладка!!!
     { //отладка!!!
-      fprintf(stderr, "%s\n", list); //отладка!!!
+      std::cerr << list << std::endl; //отладка!!!
       delete [] list; //отладка!!!
     } //отладка!!!
 
@@ -515,9 +498,10 @@ void SomeDirectory::PrintSnapshot(void)
 {
   if(pdsSnapshot != NULL)
   {
-    fprintf(stderr, "SomeDirectory::PrintSnapshot() : snapshot for \"%s\"\n", pfdData->pName);
+    std::cerr << "SomeDirectory::PrintSnapshot() : snapshot for \"" << pfdData->pName << "\"" << std::endl;
     pdsSnapshot->PrintSnapshot();
   }
   else
-    fprintf(stderr, "Snapshot is NULL!\n");
+    std::cerr << "Snapshot is NULL!" << std::endl;
+    
 }

@@ -73,7 +73,7 @@ char * const JSONService::GetJSON(void)
       //если это начальная инициализация
       if(stType == INIT_SERVICE && pfscList->rocEvent == DIRECTORY_END)
       {
-	fprintf(stderr, "JSONService::GetJSON() error: wrong JSON format!!!\n");
+	std::cerr << "JSONService::GetJSON() error: wrong JSON format!!!" << std::endl;
       }
     }
     pfscList = pfscList->pfscNext;
@@ -188,14 +188,7 @@ void JSONService::PrintService(void)
   pfscList = pfscFirst;
   while(pfscList != NULL)
   {
-    fprintf(stderr, "Session: %5ld, pfdFile=%ld,rocEvent=%d,itInode=%ld,ttTime=%ld,pszChanges=%s,pfscNext=%ld\n",
-	    ulSessionNumber,
-	    (unsigned long)pfscList->pfdFile,
-	    pfscList->rocEvent,
-	    (unsigned long)pfscList->itInode,
-	    pfscList->ttTime,
-	    pfscList->pszChanges,
-	    (unsigned long)pfscList->pfscNext);
+    std::cerr << "Session: " << ulSessionNumber << ", pfdFile=" << (unsigned long)pfscList->pfdFile << ",rocEvent=" << pfscList->rocEvent << ",itInode=" << (unsigned long)pfscList->itInode << ",ttTime=" << pfscList->ttTime << ",pszChanges=" << pfscList->pszChanges     << ",pfscNext=" << (unsigned long)pfscList->pfscNext << std::endl;
     pfscList = pfscList->pfscNext;
   }
 }
@@ -357,7 +350,7 @@ FSChange::FSChange(ServiceType in_stType, DirSnapshot::FileData * const in_pfdFi
     else
       pfscNext = NULL;
   }
-//   fprintf(stderr, "FSChange::FSChange() : %s\n", pszChanges); //отладка!!!
+//   std::cerr << "FSChange::FSChange() : " << pszChanges << std::endl; //отладка!!!
 }
 
 FSChange::~FSChange()

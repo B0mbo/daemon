@@ -5,8 +5,8 @@
 
 #pragma once
 
-#include<cstdio>
 #include<cstring>
+#include<iostream>
 
 namespace undefinedspace {
 

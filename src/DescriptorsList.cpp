@@ -132,7 +132,7 @@ void DescriptorsList::SubQueueElement(int in_nDirFd)
     while(pdleList != NULL)
     {
 	nDirFd = pdleList->psdDirectory->GetDirFd();
-//	fprintf(stderr, "DescriptorsList::SubQueueElement() : %d, %d\n", (int)nDirFd, (int)in_nDirFd); //отладка!!!
+//	std::cerr << "DescriptorsList::SubQueueElement() : %d, %d\n", (int)nDirFd, (int)in_nDirFd); //отладка!!!
 	if(nDirFd == in_nDirFd)
 	{
 	    //удаляем элемент из очереди
@@ -199,21 +199,21 @@ void DescriptorsList::PrintList(void)
     //если список пуст - выходим
     if(pdleFirst == NULL)
     {
-	fprintf(stderr, "\nDescriptorsList::PrintList() : DirectoryList is empty!\n\n");
+	std::cerr << std::endl << "DescriptorsList::PrintList() : DirectoryList is empty!" << std::endl << std::endl;
 	return;
     }
 
-    fprintf(stderr, "\nDescriptorsList::PrintList() : DirectoryList: начало списка.\n");
+    std::cerr << std::endl << "DescriptorsList::PrintList() : DirectoryList: начало списка." << std::endl;
     pthread_mutex_lock(&mListMutex);
     pdleList = pdleFirst;
     while(pdleList != NULL)
     {
 	pfdData = pdleList->psdDirectory->GetFileData();
 	if(pfdData != NULL)
-	  fprintf(stderr, "DescriptorsList::PrintList() : DirectoryList: файл %s, fd=%d, inode=%d.\n", pdleList->psdDirectory->GetDirName(), pdleList->psdDirectory->GetDirFd(), (int)pfdData->stData.st_ino);
+	  std::cerr << "DescriptorsList::PrintList() : DirectoryList: файл " << pdleList->psdDirectory->GetDirName() << ", fd=" << pdleList->psdDirectory->GetDirFd() << ", inode=" << (int)pfdData->stData.st_ino << "." <<  std::endl;
 	pdleList = pdleList->pdleNext;
     }
-    fprintf(stderr, "DescriptorsList::PrintList() : DirectoryList: конец списка.\n\n");
+    std::cerr << "DescriptorsList::PrintList() : DirectoryList: конец списка." << std::endl << std::endl;
     pthread_mutex_unlock(&mListMutex);
 }
 
@@ -224,10 +224,10 @@ void DescriptorsList::UpdateList(void)
     int nDirFd;
     DirSnapshot::FileData *pfdData;
 
-//     fprintf(stderr, "DescriptorsList::UpdateList() : start\n"); //отладка!!!
+//     std::cerr << "DescriptorsList::UpdateList() : start" << std::endl; //отладка!!!
     if(pdleFirst == NULL)
     {
-	fprintf(stderr, "DescriptorsList::UpdateList(): the list is empty!\n"); //отладка!!!
+	std::cerr << "DescriptorsList::UpdateList(): the list is empty!" << std::endl; //отладка!!!
 	return;
     }
 //    pthread_mutex_lock(&mListMutex); (?)
@@ -237,7 +237,7 @@ void DescriptorsList::UpdateList(void)
     {
 	if(pdleList->psdDirectory == NULL)
 	{
-	  fprintf(stderr, "DescriptorsList::UpdateList() Update: NULL!\n"); //отладка!!!
+	  std::cerr << "DescriptorsList::UpdateList() Update: NULL!" << std::endl; //отладка!!!
 	  continue;
 	}
 	pfdData = pdleList->psdDirectory->GetFileData();
@@ -268,7 +268,7 @@ void DescriptorsList::UpdateList(void)
 // 			struct stat st; //отладка!!!
 // 			fstat(nDirFd, &st); //отладка!!!
 // 			pPath = pdleList->psdDirectory->GetFullPath(); //отладка!!!
-// 			fprintf(stderr, "DescriptorsList::UpdateList() : \"%s\", fd=%d, st.st_ino=%d\n", pPath, nDirFd, (int)st.st_ino); //отладка!!!
+// 			std::cerr << "DescriptorsList::UpdateList() : \"%s\", fd=%d, st.st_ino=%d\n", pPath, nDirFd, (int)st.st_ino); //отладка!!!
 // 			if(pPath != NULL) //отладка!!!
 // 			  delete [] pPath; //отладка!!!
 			perror("DescriptorsList::UpdateList() ???невозможно назначить обработку для дескриптора");
@@ -291,7 +291,7 @@ void DescriptorsList::UpdateList(void)
 	else
 	{
 // 	  if(pdleList->psdDirectory->IsSnapshotNeeded())
-// 	    fprintf(stderr, "DescriptorsList::UpdateList() 3: no name or file data!\n");
+// 	    std::cerr << "DescriptorsList::UpdateList() 3: no name or file data!" << std::endl;
 	}
 	pdleList = pdleList->pdleNext;
     }
@@ -330,7 +330,7 @@ DescriptorsList::DirListElement::DirListElement(SomeDirectory *in_psdDirectory, 
     psdDirectory = in_psdDirectory;
     pdlePrev = in_pdlePrev;
 
-//     fprintf(stderr, "DirListElement::DirListElement() : inode=%d\n", (int)(psdDirectory->GetDirSnapshot::FileData())->stData.st_ino); //отладка!!!
+//     std::cerr << "DirListElement::DirListElement() : inode=" << psdDirectory->GetDirSnapshot::FileData())->stData.st_ino << std::endl; //отладка!!!
     //исключаем выпадение части элементов списка
     if(in_pdlePrev != NULL)
     {

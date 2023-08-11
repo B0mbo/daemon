@@ -6,7 +6,7 @@
 #pragma once
 
 #include<ctime>
-#include<cstdio>
+#include<iostream>
 #include<pthread.h>
 
 #include"DirSnapshot.h"

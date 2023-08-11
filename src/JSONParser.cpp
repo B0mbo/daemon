@@ -62,7 +62,7 @@ bool JSONParser::CheckRequest(void)
   //    pcJSONRequest = new char[128]; //отладка!!!
   //    memset(pcJSONRequest, 0, 128); //отладка!!!
   //    strncpy(pcJSONRequest, "[{\"\"}\"]\"]", 127); //отладка!!!
-  //    fprintf(stderr, "JSONParser::CheckRequest() : Start debug:\n%s\n", pcJSONRequest); //отладка!!!
+  //    std::cerr << "JSONParser::CheckRequest() : Start debug:" << std::endl << pcJSONRequest << std::endl; //отладка!!!
   //    stStartPointer = 0; //отладка!!!
   //    stEndPointer = (long) strlen((char *)pcJSONRequest); //отладка!!!
 
@@ -109,7 +109,7 @@ bool JSONParser::CheckRequest(void)
   if(lQuotesCounter == 0 && lBraceCounter == 0 && lBracketCounter == 0)
     return true;
 
-  fprintf(stderr, "JSONParser::CheckRequest() : Wrong JSON format!!!\n%s\n", pcJSONRequest);
+  std::cerr << "JSONParser::CheckRequest() : Wrong JSON format!!!" << std::endl << pcJSONRequest << std::endl;
   return false;
 }
 

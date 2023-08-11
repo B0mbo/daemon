@@ -413,7 +413,7 @@ Connection: keep-alive\
 	  pszBuff = new char[stLen];
 	  memset(pszBuff, 0, stLen);
 	  snprintf(pszBuff, stLen-1, szRequest, (stTypes[nTypeNumber] == INIT_SERVICE)?"POST":"PUT",pszServerURL, strlen(pszJSON), pszJSON);
-//	  fprintf(stderr, "\n%s\n", pszBuff); //отладка!!!
+//	  std::cerr << "\n%s\n", pszBuff); //отладка!!!
 	  delete [] pszJSON;
 
 	  //отправляем изменения (строка сама удалится после отправки)

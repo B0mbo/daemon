@@ -6,8 +6,8 @@
 #pragma once
 
 #include<fcntl.h>
-#include<cstdio>
 #include<cstring>
+#include<iostream>
 #include<unistd.h>
 #include<pthread.h>
 #include<sys/stat.h>
