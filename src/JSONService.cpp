@@ -60,7 +60,7 @@ char * const JSONService::GetJSON(void)
   pfscList = pfscFirst;
   while(pfscList != NULL)
   {
-    if(pfscList->rocEvent == IS_EMPTY || pfscList->pszChanges == NULL)
+    if(pfscList->rocEvent == ResultOfCompare::IS_EMPTY || pfscList->pszChanges == NULL)
     {
       pfscList = pfscList->pfscNext;
       continue;
@@ -71,7 +71,7 @@ char * const JSONService::GetJSON(void)
     {
       stLen++;
       //если это начальная инициализация
-      if(stType == INIT_SERVICE && pfscList->rocEvent == DIRECTORY_END)
+      if(stType == INIT_SERVICE && pfscList->rocEvent == ResultOfCompare::DIRECTORY_END)
       {
 	std::cerr << "JSONService::GetJSON() error: wrong JSON format!!!" << std::endl;
       }
@@ -90,12 +90,12 @@ char * const JSONService::GetJSON(void)
   {
     if(pfscList->pszChanges != NULL)
     {
-      if( pfscList->rocEvent != DIRECTORY_END &&
-	  !(pfscLast->nType == IS_DIRECTORY && ( pfscLast->rocEvent == IS_EQUAL || pfscLast->rocEvent == INIT_PROJECT )) &&
-	  pfscLast->rocEvent != INIT_PROJECT &&
-	  pfscLast->rocEvent != START_FILE_LIST &&
-	  !(pfscLast->pfscNext != NULL && pfscLast->pfscNext->rocEvent == END_FILE_LIST) &&
-	  !(pfscLast->rocEvent == START_CONTENT && ((pfscLast->pfscNext != NULL)&&(pfscLast->pfscNext->rocEvent == END_CONTENT))) && //убираем содержание пустых директорий
+      if( pfscList->rocEvent != ResultOfCompare::DIRECTORY_END &&
+	  !(pfscLast->nType == IS_DIRECTORY && ( pfscLast->rocEvent == ResultOfCompare::IS_EQUAL || pfscLast->rocEvent == ResultOfCompare::INIT_PROJECT )) &&
+	  pfscLast->rocEvent != ResultOfCompare::INIT_PROJECT &&
+	  pfscLast->rocEvent != ResultOfCompare::START_FILE_LIST &&
+	  !(pfscLast->pfscNext != NULL && pfscLast->pfscNext->rocEvent == ResultOfCompare::END_FILE_LIST) &&
+	  !(pfscLast->rocEvent == ResultOfCompare::START_CONTENT && ((pfscLast->pfscNext != NULL)&&(pfscLast->pfscNext->rocEvent == ResultOfCompare::END_CONTENT))) && //убираем содержание пустых директорий
 	  pfscList != pfscFirst )
 	strncat(pszRet, ",", stLen);
       strncat(pszRet, pfscList->pszChanges, stLen);
@@ -123,8 +123,8 @@ void JSONService::AddChange(ServiceType in_stType, DirSnapshot::FileData * const
     else
     {
       //подготавливаем квадратные скобки для списка файлов
-      pfscFirst = new FSChange(in_stType, NULL, NULL, START_FILE_LIST, NULL);
-      new FSChange(in_stType, NULL, NULL, END_FILE_LIST, pfscFirst);
+      pfscFirst = new FSChange(in_stType, NULL, NULL, ResultOfCompare::START_FILE_LIST, NULL);
+      new FSChange(in_stType, NULL, NULL, ResultOfCompare::END_FILE_LIST, pfscFirst);
       new FSChange(in_stType, in_pfdFile, in_pfdParent, in_rocEvent, pfscFirst);
     }
     pthread_mutex_unlock(&mJSONServiceMutex);
@@ -142,7 +142,7 @@ void JSONService::AddChange(ServiceType in_stType, DirSnapshot::FileData * const
     }
     else if(in_stType == CURRENT_SERVICE)
     {
-      if(pfscList->pfscNext != NULL && pfscList->pfscNext->rocEvent == END_FILE_LIST)
+      if(pfscList->pfscNext != NULL && pfscList->pfscNext->rocEvent == ResultOfCompare::END_FILE_LIST)
 	break;
     }
     pfscList = pfscList->pfscNext;
@@ -188,7 +188,7 @@ void JSONService::PrintService(void)
   pfscList = pfscFirst;
   while(pfscList != NULL)
   {
-    std::cerr << "Session: " << ulSessionNumber << ", pfdFile=" << (unsigned long)pfscList->pfdFile << ",rocEvent=" << pfscList->rocEvent << ",itInode=" << (unsigned long)pfscList->itInode << ",ttTime=" << pfscList->ttTime << ",pszChanges=" << pfscList->pszChanges     << ",pfscNext=" << (unsigned long)pfscList->pfscNext << std::endl;
+    std::cerr << "Session: " << ulSessionNumber << ", pfdFile=" << (unsigned long)pfscList->pfdFile << ",rocEvent=" << static_cast<int>(pfscList->rocEvent) << ",itInode=" << (unsigned long)pfscList->itInode << ",ttTime=" << pfscList->ttTime << ",pszChanges=" << pfscList->pszChanges     << ",pfscNext=" << (unsigned long)pfscList->pfscNext << std::endl;
     pfscList = pfscList->pfscNext;
   }
 }
@@ -198,7 +198,7 @@ void JSONService::PrintService(void)
 FSChange::FSChange()
 {
   pfdFile = NULL;
-  rocEvent = IS_EMPTY;
+  rocEvent = ResultOfCompare::IS_EMPTY;
   nType = IS_NOTAFILE;
   itInode = 0;
   ttTime = 0;
@@ -214,17 +214,17 @@ FSChange::FSChange(ServiceType in_stType, DirSnapshot::FileData * const in_pfdFi
   char szType[32], szEvent[32], szCrc[32], szParent[32];
   size_t stLen;
 
-  if(in_rocEvent == IS_DELETED || in_rocEvent == DIRECTORY_END || in_rocEvent == START_FILE_LIST || in_rocEvent == END_FILE_LIST)
+  if(in_rocEvent == ResultOfCompare::IS_DELETED || in_rocEvent == ResultOfCompare::DIRECTORY_END || in_rocEvent == ResultOfCompare::START_FILE_LIST || in_rocEvent == ResultOfCompare::END_FILE_LIST)
     pfdFile = NULL;
   else
     pfdFile = in_pfdFile;
 
   if(in_pfdFile == NULL || in_pfdFile->pName == NULL)
   {
-    if(in_rocEvent == DIRECTORY_END || in_rocEvent == START_FILE_LIST || in_rocEvent == END_FILE_LIST)
+    if(in_rocEvent == ResultOfCompare::DIRECTORY_END || in_rocEvent == ResultOfCompare::START_FILE_LIST || in_rocEvent == ResultOfCompare::END_FILE_LIST)
       rocEvent = in_rocEvent;
     else
-      rocEvent = IS_EMPTY;
+      rocEvent = ResultOfCompare::IS_EMPTY;
     nType = IS_NOTAFILE;
     itInode = 0;
     ttTime = 0;
@@ -251,7 +251,7 @@ FSChange::FSChange(ServiceType in_stType, DirSnapshot::FileData * const in_pfdFi
     {
       case IS_FILE:
 	strncpy(szType, "file", sizeof(szType));
-	if(in_rocEvent != IS_DELETED)
+	if(in_rocEvent != ResultOfCompare::IS_DELETED)
 	  snprintf(szCrc, sizeof(szCrc), ",\"crc\":\"%ld\"", in_pfdFile->ulCrc);
 	break;
       case IS_DIRECTORY:
@@ -259,7 +259,7 @@ FSChange::FSChange(ServiceType in_stType, DirSnapshot::FileData * const in_pfdFi
 	break;
       case IS_LINK:
 	strncpy(szType, "link", sizeof(szType));
-	if(in_rocEvent != IS_DELETED)
+	if(in_rocEvent != ResultOfCompare::IS_DELETED)
 	  snprintf(szCrc, sizeof(szCrc), ",\"crc\":\"%ld\"", in_pfdFile->ulCrc);
 	break;
       default:
@@ -269,29 +269,29 @@ FSChange::FSChange(ServiceType in_stType, DirSnapshot::FileData * const in_pfdFi
 
   switch(in_rocEvent)
   {
-    case IS_EQUAL:
+    case ResultOfCompare::IS_EQUAL:
       strncpy(szEvent, "IS_EQUAL", sizeof(szEvent));
       break;
-    case IS_CREATED:
+    case ResultOfCompare::IS_CREATED:
       strncpy(szEvent, "IS_CREATED", sizeof(szEvent));
       if(in_pfdParent != NULL)
         snprintf(szParent, sizeof(szParent), ",\"parent\":\"%ld\"", in_pfdParent->stData.st_ino);
       break;
-    case IS_DELETED:
+    case ResultOfCompare::IS_DELETED:
       strncpy(szEvent, "IS_DELETED", sizeof(szEvent));
       if(in_pfdParent != NULL)
         snprintf(szParent, sizeof(szParent), ",\"parent\":\"%ld\"", in_pfdParent->stData.st_ino);
       break;
-    case NEW_NAME:
+    case ResultOfCompare::NEW_NAME:
       strncpy(szEvent, "NEW_NAME", sizeof(szEvent));
       break;
-    case NEW_TIME:
+    case ResultOfCompare::NEW_TIME:
       strncpy(szEvent, "NEW_TIME", sizeof(szEvent));
       break;
-    case NEW_HASH:
+    case ResultOfCompare::NEW_HASH:
       strncpy(szEvent, "NEW_HASH", sizeof(szEvent));
       break;
-    case INIT_PROJECT:
+    case ResultOfCompare::INIT_PROJECT:
       strncpy(szEvent, "INIT_PROJECT", sizeof(szEvent));
       break;
     default:
@@ -300,10 +300,10 @@ FSChange::FSChange(ServiceType in_stType, DirSnapshot::FileData * const in_pfdFi
 
   switch(in_rocEvent)
   {
-    case START_FILE_LIST:
+    case ResultOfCompare::START_FILE_LIST:
       strncpy(szBuff, "[", sizeof(szBuff));
       break;
-    case END_FILE_LIST:
+    case ResultOfCompare::END_FILE_LIST:
       strncpy(szBuff, "]", sizeof(szBuff));
       break;
     default:
@@ -332,7 +332,7 @@ FSChange::FSChange(ServiceType in_stType, DirSnapshot::FileData * const in_pfdFi
       pfscNext->pfscNext = in_pfscPrev->pfscNext;
       in_pfscPrev->pfscNext = this;
     }
-    pfscNext->rocEvent = DIRECTORY_END;
+    pfscNext->rocEvent = ResultOfCompare::DIRECTORY_END;
     memset(szBuff, 0, sizeof(szBuff));
     strncpy(szBuff, "]}", sizeof(szBuff)-1);
     pfscNext->pszChanges = new char[stLen + 1];
@@ -356,7 +356,7 @@ FSChange::FSChange(ServiceType in_stType, DirSnapshot::FileData * const in_pfdFi
 FSChange::~FSChange()
 {
   pfdFile = NULL;
-  rocEvent = IS_EMPTY;
+  rocEvent = ResultOfCompare::IS_EMPTY;
   nType = IS_NOTAFILE;
   itInode = 0;
   ttTime = 0;

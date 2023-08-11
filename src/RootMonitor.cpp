@@ -53,7 +53,7 @@ RootMonitor::RootMonitor(char * const pRootPath)
     psdRootDirectory = new SomeDirectory(pRootPath, NULL);
 
     //создаём первый список событий (инициализирующий)
-    AddChange(INIT_SERVICE, ulLastSessionNumber, psdRootDirectory->GetFileData(), NULL, INIT_PROJECT);
+    AddChange(INIT_SERVICE, ulLastSessionNumber, psdRootDirectory->GetFileData(), NULL, ResultOfCompare::INIT_PROJECT);
 
     //открываем корневую директорию и добавляем полученный дескриптор в список открытых
     //этот список существует для упрощения поиска директории по её дескриптору
@@ -95,7 +95,7 @@ RootMonitor::RootMonitor(DirSnapshot::FileData * const in_pfdData)
     psdRootDirectory = new SomeDirectory(in_pfdData, NULL, true);
 
     //создаём первый список событий (инициализирующий)
-    AddChange(INIT_SERVICE, ulLastSessionNumber, psdRootDirectory->GetFileData(), NULL, INIT_PROJECT);
+    AddChange(INIT_SERVICE, ulLastSessionNumber, psdRootDirectory->GetFileData(), NULL, ResultOfCompare::INIT_PROJECT);
 
     //открываем корневую директорию и добавляем полученный дескриптор в список открытых
     if(pdlList == NULL)
@@ -136,7 +136,7 @@ RootMonitor::RootMonitor(SomeDirectory * const in_psdRootDirectory)
     psdRootDirectory = in_psdRootDirectory;
 
     //создаём первый список событий (инициализирующий)
-    AddChange(INIT_SERVICE, ulLastSessionNumber, psdRootDirectory->GetFileData(), NULL, INIT_PROJECT);
+    AddChange(INIT_SERVICE, ulLastSessionNumber, psdRootDirectory->GetFileData(), NULL, ResultOfCompare::INIT_PROJECT);
 
     //открываем корневую директорию и добавляем полученный дескриптор в список открытых
     if(pdlList == NULL)
@@ -210,7 +210,7 @@ void RootMonitor::AddChange(ServiceType in_stType, unsigned long in_ulSessionNum
 //добавить в очередь инициализирующее событие для данного проекта
 void RootMonitor::AddInitChange(DirSnapshot::FileData * const in_pfdFile, DirSnapshot::FileData const * const in_pfdParent)
 {
-  AddChange(INIT_SERVICE, ulLastSessionNumber, in_pfdFile, in_pfdParent, IS_EQUAL);
+  AddChange(INIT_SERVICE, ulLastSessionNumber, in_pfdFile, in_pfdParent, ResultOfCompare::IS_EQUAL);
 }
 
 //получить JSON конкретной сессии

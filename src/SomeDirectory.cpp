@@ -279,24 +279,24 @@ void SomeDirectory::CompareSnapshots(void)
     rmProject->IncRegularSessionNumber();
 
     //обрабатываем каждое отличие в отдельности
-    while(scResult.rocResult != IS_EMPTY)
+    while(scResult.rocResult != ResultOfCompare::IS_EMPTY)
     {
 	//обрабатываем разницу между новым и старым слепками
 	switch(scResult.rocResult)
 	{
-	  case NO_SNAPSHOT:
+	  case ResultOfCompare::NO_SNAPSHOT:
 	    std::cerr << "SomeDirectory::CompareSnapshots() : No snapshot." << std::endl; //отладка!!!
 	    break;
-	  case IS_EMPTY:
+	  case ResultOfCompare::IS_EMPTY:
 	    std::cerr << "SomeDirectory::CompareSnapshots() : Old snapshot is empty." << std::endl; //отладка!!!
 	    break;
-	  case INPUT_IS_EMPTY:
+	  case ResultOfCompare::INPUT_IS_EMPTY:
 	    std::cerr << "SomeDirectory::CompareSnapshots() : Input snapshot is empty." << std::endl; //отладка!!!
 	    break;
-	  case OUTPUT_IS_EMPTY:
+	  case ResultOfCompare::OUTPUT_IS_EMPTY:
 	    std::cerr << "SomeDirectory::CompareSnapshots() : The result is empty." << std::endl; //отладка!!!
 	    break;
-	  case IS_CREATED:
+	  case ResultOfCompare::IS_CREATED:
 	    //получаем путь к родительской директории
 	    pPath = GetFullPath();
 	    //добавляем файл в прежний слепок
@@ -318,15 +318,15 @@ void SomeDirectory::CompareSnapshots(void)
 	    if(pPath != NULL)
 	      delete [] pPath;
 	    //добавляем запись в список событий
-	    rmProject->AddChange(CURRENT_SERVICE, ulSessionNumber, scResult.pfdData, GetFileData(), IS_CREATED);
+	    rmProject->AddChange(CURRENT_SERVICE, ulSessionNumber, scResult.pfdData, GetFileData(), ResultOfCompare::IS_CREATED);
 	    break;
-	  case IS_DELETED:
+	  case ResultOfCompare::IS_DELETED:
 	    pPath = GetFullPath();
 	    std::cerr << ((scResult.pfdData->nType==IS_DIRECTORY)?"Directory":"File") << " \"" << ((pPath==NULL)?"":pPath) << ((pPath==NULL||( (strlen(pPath) > 0) && (pPath[strlen(pPath)-1] == '/') ))?"":"/") << scResult.pfdData->pName << "\" (inode=" << (int)scResult.pfdData->stData.st_ino << ") is deleted." << std::endl; //отладка!!!
 	    if(pPath != NULL)
 	      delete [] pPath;
 	    //добавляем запись в список событий
-	    rmProject->AddChange(CURRENT_SERVICE, ulSessionNumber, scResult.pfdData, GetFileData(), IS_DELETED);
+	    rmProject->AddChange(CURRENT_SERVICE, ulSessionNumber, scResult.pfdData, GetFileData(), ResultOfCompare::IS_DELETED);
 	    //если это директория - удаляем из списка директорий
 	    //из слепка он при этом удалится автоматом
 	    if(scResult.pfdData->nType==IS_DIRECTORY)
@@ -343,7 +343,7 @@ void SomeDirectory::CompareSnapshots(void)
 	      pdsSnapshot->SubFile(scResult.pfdData->pName);
 	    }
 	    break;
-	  case NEW_NAME:
+	  case ResultOfCompare::NEW_NAME:
 	    pPath = GetFullPath();
 	    std::cerr << "Some file is renamed to \"" << ((pPath==NULL)?"":pPath) << ((pPath==NULL||( (strlen(pPath) > 0) && (pPath[strlen(pPath)-1] == '/') ))?"":"/") << scResult.pfdData->pName << "\"." << std::endl; //отладка!!!
 	    if(pPath != NULL)
@@ -351,9 +351,9 @@ void SomeDirectory::CompareSnapshots(void)
 	    //переимновываем файл
 	    pdsSnapshot->RenameFile(scResult.pfdData);
 	    //добавляем запись в список событий
-	    rmProject->AddChange(CURRENT_SERVICE, ulSessionNumber, scResult.pfdData, GetFileData(), NEW_NAME);
+	    rmProject->AddChange(CURRENT_SERVICE, ulSessionNumber, scResult.pfdData, GetFileData(), ResultOfCompare::NEW_NAME);
 	    break;
-	  case NEW_TIME:
+	  case ResultOfCompare::NEW_TIME:
 	    pPath = GetFullPath();
 	    std::cerr << "A time of file \"" << ((pPath==NULL)?"":pPath) << ((pPath==NULL)?"":"/") << scResult.pfdData->pName << "\" is changed." <<std::endl; //отладка!!!
 	    //scResult.pfdData содержит данные изменившегося файла. Всё, кроме хэша
@@ -368,7 +368,7 @@ void SomeDirectory::CompareSnapshots(void)
 // 	    //добавляем запись в список событий
 // 	    rmProject->AddChange(CURRENT_SERVICE, ulSessionNumber, scResult.pfdData, NEW_TIME, GetFileData()->stData.st_ino);
 	    break;
-	  case NEW_HASH:
+	  case ResultOfCompare::NEW_HASH:
 	    pPath = GetFullPath();
 	    std::cerr << ((scResult.pfdData->nType==IS_DIRECTORY)?"Directory":"File") << " \"" << ((pPath==NULL)?"":pPath) << ((pPath==NULL||( (strlen(pPath) > 0) && (pPath[strlen(pPath)-1] == '/') ))?"":"/") << scResult.pfdData->pName << "\" (inode=" << (int)scResult.pfdData->stData.st_ino << ") is changed." << std::endl; //отладка!!!
 
@@ -381,16 +381,16 @@ void SomeDirectory::CompareSnapshots(void)
 	    if(pPath != NULL)
 	      delete [] pPath;
 	    //добавляем запись в список событий
-	    rmProject->AddChange(CURRENT_SERVICE, ulSessionNumber, scResult.pfdData, GetFileData(), NEW_HASH);
+	    rmProject->AddChange(CURRENT_SERVICE, ulSessionNumber, scResult.pfdData, GetFileData(), ResultOfCompare::NEW_HASH);
 	    break;
-	  case IS_EQUAL:
+	  case ResultOfCompare::IS_EQUAL:
 	    break;
 	  default:
 	    break;
 	}
 
 	//если это первый "проход" и различия не найдены - повтор
-	if(!fSecondResult && scResult.rocResult == IS_EQUAL)
+	if(!fSecondResult && scResult.rocResult == ResultOfCompare::IS_EQUAL)
 	{
 	  //второй проход функции сравнения слепков
 	  fSecondResult = true;

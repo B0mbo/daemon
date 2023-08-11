@@ -502,7 +502,7 @@ void DirSnapshot::IsDataIncluded(DirSnapshot * const in_pdsSubset, DirSnapshot *
   if(in_pdsSet == NULL)
   {
     //добавляем сообщение об ошибке и выходим
-    in_pdsSubset->AddResult(NULL, NO_SNAPSHOT);
+    in_pdsSubset->AddResult(NULL, ResultOfCompare::NO_SNAPSHOT);
     return;
   }
 
@@ -510,14 +510,14 @@ void DirSnapshot::IsDataIncluded(DirSnapshot * const in_pdsSubset, DirSnapshot *
   if(in_pdsSubset->pfdFirst == NULL)
   {
     //добавляем сообщение об ошибке и выходим
-    in_pdsSubset->AddResult(NULL, IS_EMPTY);
+    in_pdsSubset->AddResult(NULL, ResultOfCompare::IS_EMPTY);
     return;
   }
   //если новый слепок пустой, сообщаем об ошибке
   if(in_pdsSet->pfdFirst == NULL)
   {
     //сообщаем о том, что новый слепок не был создан
-    in_pdsSubset->AddResult(NULL, INPUT_IS_EMPTY);
+    in_pdsSubset->AddResult(NULL, ResultOfCompare::INPUT_IS_EMPTY);
     return;
   }
 
@@ -549,7 +549,7 @@ void DirSnapshot::IsDataIncluded(DirSnapshot * const in_pdsSubset, DirSnapshot *
 	      {
 		//хэши старого и нового слепков отличаются - файл изменён
 		//добавляем новый файл в список отличий
-		in_pdsSubset->AddResult(pfdListSet, NEW_HASH);
+		in_pdsSubset->AddResult(pfdListSet, ResultOfCompare::NEW_HASH);
 	      }
 	      else
 	      {
@@ -589,14 +589,14 @@ void DirSnapshot::IsDataIncluded(DirSnapshot * const in_pdsSubset, DirSnapshot *
     if(fNotALink && pfdLastSubset != NULL)
     {
       //добавляем файл из нового слепка в список отличий
-      in_pdsSubset->AddResult(pfdLastSubset, NEW_NAME);
+      in_pdsSubset->AddResult(pfdLastSubset, ResultOfCompare::NEW_NAME);
     }
 
     //если достигнут конец второго слепка, и какой-то файл из первого слепка в нём не найден
     if(!fNotALink && pfdListSet == NULL && pfdListSubset != NULL && pfdListSubset->nType != IS_NOTAFILE)
     {
       //добавляем этот файл в список отличий
-      in_pdsSubset->AddResult(pfdListSubset, IS_DELETED);
+      in_pdsSubset->AddResult(pfdListSubset, ResultOfCompare::IS_DELETED);
     }
     //берём следующий файл из первого слепка для поиска во втором слепке
     pfdListSubset = pfdListSubset->pfdNext;
@@ -631,7 +631,7 @@ void DirSnapshot::IsDataIncluded(DirSnapshot * const in_pdsSubset, DirSnapshot *
     if(pfdListSubset == NULL && pfdListSet != NULL && pfdListSet->nType!= IS_NOTAFILE)
     {
       //добавляем этот файл к списку отличий
-      in_pdsSubset->AddResult(pfdListSet, IS_CREATED);
+      in_pdsSubset->AddResult(pfdListSet, ResultOfCompare::IS_CREATED);
     }
 
     //берём следующий файл из второго слепка
@@ -639,7 +639,7 @@ void DirSnapshot::IsDataIncluded(DirSnapshot * const in_pdsSubset, DirSnapshot *
   }
 
   if(in_pdsSubset->IsResultEmpty())
-    in_pdsSubset->AddResult(NULL, IS_EQUAL);
+    in_pdsSubset->AddResult(NULL, ResultOfCompare::IS_EQUAL);
 }
 
 //удаляем всё из списка отличий двух слепков
@@ -742,9 +742,9 @@ void DirSnapshot::PrintComparison(void)
   while(pscList != NULL)
   {
     if(pscList->pfdData != NULL && pscList->pfdData->pName != NULL)
-      std::cerr << "DirSnapshot::PrintComparison() : \"" << pscList->pfdData->pName << "\", " << pscList->rocResult << std::endl;
+      std::cerr << "DirSnapshot::PrintComparison() : \"" << pscList->pfdData->pName << "\", " << static_cast<int>(pscList->rocResult) << std::endl;
     else
-      std::cerr << "DirSnapshot::PrintComparison() : NULL, " << pscList->rocResult << std::endl;
+      std::cerr << "DirSnapshot::PrintComparison() : NULL, " << static_cast<int>(pscList->rocResult) << std::endl;
     pscList = pscList->pscNext;
   }
 }
@@ -1018,7 +1018,7 @@ char const * const DirSnapshot::FileData::GetName()
 
 DirSnapshot::SnapshotComparison::SnapshotComparison()
 {
-    rocResult = IS_EMPTY;
+    rocResult = ResultOfCompare::IS_EMPTY;
     pfdData = NULL;
     pscNext = NULL;
 }
@@ -1032,7 +1032,7 @@ DirSnapshot::SnapshotComparison::SnapshotComparison(FileData * const in_pfdFile,
 
 DirSnapshot::SnapshotComparison::~SnapshotComparison()
 {
-    rocResult = IS_EMPTY;
+    rocResult = ResultOfCompare::IS_EMPTY;
     pfdData = NULL;
 }
 
@@ -1041,7 +1041,7 @@ void DirSnapshot::SnapshotComparison::CopyResult(SnapshotComparison const * cons
 {
     if(in_pscSnapshotResult == NULL)
     {
-	rocResult = IS_EMPTY;
+	rocResult = ResultOfCompare::IS_EMPTY;
 	pfdData = NULL;
 	pscNext = NULL;
 	return;
